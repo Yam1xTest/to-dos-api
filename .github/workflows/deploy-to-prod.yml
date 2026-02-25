@@ -4,6 +4,28 @@ on:
   push:
 
 jobs:
+  deploy-to-prod2:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      - name: Create kubeconfig file
+        run: |
+          cd $HOME
+          mkdir .kube
+          echo "${{ secrets.TO_DOS_PROD_KUBECONFIG }}" > .kube/config
+
+      - name: Deploy
+        uses: helmfile/helmfile-action@v1.9.0
+        with:
+          helmfile-version: 'v0.164.0'
+          helm-version: 'v3.14.4'
+          helmfile-args: >
+            apply 
+            --namespace prod
+            -f ci/helmfile.yaml 
+            --state-values-set image.tag=sha-${{ github.sha }}
+          helmfile-auto-init: "false"
   deploy-to-prod:
     if: false
     runs-on: ubuntu-22.04
