@@ -2,11 +2,10 @@ name: Deploy to Prod
 
 on:
   push:
-    branches:
-      - master
 
 jobs:
   deploy-to-prod:
+    if: false
     runs-on: ubuntu-22.04
     steps:
       - name: Check out the repo
